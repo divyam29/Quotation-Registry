@@ -1,0 +1,17 @@
+[project]
+name = "quotation-registry"
+version = "0.1.0"
+description = "Tender and quotation registry PWA"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  "pydantic>=2.8.0",
+  "python-multipart>=0.0.9",
+  "motor>=3.5.0",
+  "pymongo>=4.8.0",
+  "python-dotenv>=1.0.1",
+]
+
+[tool.uvicorn]
+factory = false

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102d4c" />
+    <meta name="description" content="Tender registry and quotation generator progressive web app." />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <title>Tender & Quotation Registry</title>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Registry PWA</p>
+          <h1>Tender & Quotation Registry</h1>
+          <p class="hero-text">
+            Track tenders, monitor follow-up pressure, and generate branded quotations from the same offline-capable workspace.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button class="button button-ghost" id="syncBanner" type="button" hidden>Offline mode active</button>
+          <button class="button button-accent" id="installBtn" type="button" hidden>Install App</button>
+        </div>
+      </header>
+
+      <nav class="tab-switcher" aria-label="Primary">
+        <button class="tab-button is-active" type="button" data-tab="registry">Registry</button>
+        <button class="tab-button" type="button" data-tab="quotation">Generate Quotation</button>
+      </nav>
+
+      <section class="tab-panel is-active" id="registryPanel">
+        <section class="stats-grid" id="statsGrid">
+          <article class="stat-card">
+            <span>Total Records</span>
+            <strong id="statTotal">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Awaiting Result</span>
+            <strong id="statAwaiting">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Urgent Follow-up</span>
+            <strong id="statUrgent">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Won</span>
+            <strong id="statWon">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Win Rate</span>
+            <strong id="statRate">0%</strong>
+          </article>
+          <article class="stat-card">
+            <span>Total Quoted</span>
+            <strong id="statValue">INR 0</strong>
+          </article>
+        </section>
+
+        <section class="surface toolbar">
+          <div class="toolbar-grid">
+            <label>
+              <span>Search</span>
+              <input id="searchInput" type="search" placeholder="Title, ref number, department" />
+            </label>
+            <label>
+              <span>Type</span>
+              <select id="typeFilter">
+                <option value="">All</option>
+                <option value="Government Tender">Government Tender</option>
+                <option value="Quotation">Quotation</option>
+              </select>
+            </label>
+            <label>
+              <span>Status</span>
+              <select id="statusFilter">
+                <option value="">All</option>
+                <option value="Applied">Applied</option>
+                <option value="Pending">Pending</option>
+                <option value="Won">Won</option>
+                <option value="Lost">Lost</option>
+              </select>
+            </label>
+            <div class="toolbar-actions">
+              <button class="button button-primary" id="newEntryBtn" type="button">New Entry</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="surface table-surface">
+          <div class="table-wrap">
+            <table class="registry-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Ref</th>
+                  <th>Department</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Deadline</th>
+                  <th>Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="entriesTableBody">
+                <tr>
+                  <td colspan="8" class="empty-cell">No records yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="tab-panel" id="quotationPanel">
+        <div class="quotation-grid">
+          <form class="surface quotation-form" id="quotationForm">
+            <div class="form-header">
+              <h2>Quotation Builder</h2>
+              <div class="form-header-actions">
+                <button class="button button-ghost" id="resetQuotationBtn" type="button">Reset</button>
+                <button class="button button-primary" id="saveToRegistryBtn" type="button">Save To Registry</button>
+              </div>
+            </div>
+
+            <details class="form-section" open>
+              <summary>Letterhead</summary>
+              <div class="field-grid">
+                <label><span>Company Name</span><input name="letterhead.company_name" type="text" /></label>
+                <label><span>Tagline</span><input name="letterhead.tagline" type="text" /></label>
+                <label class="field-span"><span>Address</span><textarea name="letterhead.address" rows="2"></textarea></label>
+                <label><span>GSTIN</span><input name="letterhead.gstin" type="text" /></label>
+                <label><span>Mobile</span><input name="letterhead.mobile" type="text" /></label>
+              </div>
+              <div class="upload-grid">
+                <div class="upload-card">
+                  <span>Logo</span>
+                  <input id="logoUpload" type="file" accept="image/*" />
+                  <img id="logoPreview" alt="Logo preview" hidden />
+                  <button class="button button-ghost" id="removeLogoBtn" type="button">Remove Logo</button>
+                </div>
+                <div class="upload-card">
+                  <span>Signature</span>
+                  <input id="signatureUpload" type="file" accept="image/*" />
+                  <img id="signaturePreview" alt="Signature preview" hidden />
+                  <button class="button button-ghost" id="removeSignatureBtn" type="button">Remove Signature</button>
+                </div>
+              </div>
+            </details>
+
+            <details class="form-section" open>
+              <summary>Quotation Meta</summary>
+              <div class="field-grid">
+                <label><span>Reference Number</span><input name="meta.ref_number" type="text" /></label>
+                <label><span>Date</span><input name="meta.date" type="date" /></label>
+                <label><span>Currency</span><input name="meta.currency" type="text" value="INR" /></label>
+                <label><span>Party Name</span><input name="meta.party_name" type="text" /></label>
+                <label class="field-span"><span>Party Address</span><textarea name="meta.party_address" rows="2"></textarea></label>
+                <label><span>Attention</span><input name="meta.attention" type="text" /></label>
+                <label class="field-span"><span>Subject</span><input name="meta.subject" type="text" value="Quotation" /></label>
+                <label class="field-span"><span>Intro</span><textarea name="meta.intro" rows="3"></textarea></label>
+              </div>
+            </details>
+
+            <details class="form-section" open>
+              <summary>Line Items</summary>
+              <div id="lineItems" class="line-items"></div>
+              <button class="button button-secondary" id="addLineItemBtn" type="button">Add Line Item</button>
+            </details>
+
+            <details class="form-section" open>
+              <summary>Terms</summary>
+              <div class="field-grid">
+                <label><span>Payment Terms</span><input name="terms.payment_terms" type="text" /></label>
+                <label><span>Delivery</span><input name="terms.delivery" type="text" /></label>
+                <label><span>Warranty</span><input name="terms.warranty" type="text" /></label>
+                <label><span>Validity Days</span><input name="terms.validity_days" type="number" min="0" value="30" /></label>
+                <label class="field-span"><span>Tax Note</span><textarea name="terms.tax_note" rows="2"></textarea></label>
+              </div>
+            </details>
+
+            <details class="form-section" open>
+              <summary>Signature Block</summary>
+              <div class="field-grid">
+                <label><span>Name</span><input name="signature.name" type="text" /></label>
+                <label><span>Designation</span><input name="signature.designation" type="text" /></label>
+                <label><span>Phone</span><input name="signature.phone" type="text" /></label>
+              </div>
+            </details>
+          </form>
+
+          <section class="surface preview-surface">
+            <div class="preview-toolbar">
+              <h2>Live Preview</h2>
+              <button class="button button-accent" id="printQuotationBtn" type="button">Print / Save PDF</button>
+            </div>
+            <article class="quotation-preview" id="quotationPreview">
+              <header class="letterhead">
+                <div class="letterhead-meta">
+                  <span id="previewGstin">GSTIN</span>
+                  <span id="previewMobile">Mobile</span>
+                </div>
+                <div class="letterhead-brand">
+                  <img id="previewLogo" alt="Company logo" hidden />
+                  <div>
+                    <h3 id="previewCompanyName">Your Company Name</h3>
+                    <p id="previewTagline">(Your Tagline)</p>
+                    <p id="previewAddress">Address line appears here.</p>
+                  </div>
+                </div>
+                <div class="letterhead-rule"></div>
+              </header>
+
+              <div class="preview-meta-row">
+                <span id="previewRef">Ref: -</span>
+                <span id="previewDate">Date: -</span>
+              </div>
+
+              <section class="preview-party">
+                <p>To,</p>
+                <p id="previewPartyName">Recipient Name</p>
+                <p id="previewPartyAddress">Recipient address</p>
+                <p id="previewAttention">Attention: -</p>
+              </section>
+
+              <section class="preview-subject">
+                <strong id="previewSubject">Quotation</strong>
+                <p id="previewIntro">Your introduction appears here.</p>
+              </section>
+
+              <table class="preview-table">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="previewItems"></tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3">Total</td>
+                    <td id="previewTotal">INR 0.00</td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              <section class="preview-terms">
+                <p><strong>Payment Terms:</strong> <span id="previewPaymentTerms">-</span></p>
+                <p><strong>Delivery:</strong> <span id="previewDelivery">-</span></p>
+                <p><strong>Warranty:</strong> <span id="previewWarranty">-</span></p>
+                <p><strong>Validity:</strong> <span id="previewValidity">30 days</span></p>
+                <p><strong>Tax Note:</strong> <span id="previewTaxNote">-</span></p>
+              </section>
+
+              <section class="preview-signature">
+                <p>For <span id="previewSignatureCompany">Your Company Name</span></p>
+                <img id="previewSignature" alt="Signature preview" hidden />
+                <p class="signature-name" id="previewSignatureName">Authorized Signatory</p>
+                <p id="previewSignatureDesignation">Designation</p>
+                <p id="previewSignaturePhone">Phone</p>
+              </section>
+            </article>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <dialog class="entry-dialog" id="entryDialog">
+      <form class="entry-form" id="entryForm" method="dialog">
+        <div class="dialog-header">
+          <h2 id="entryDialogTitle">New Entry</h2>
+          <button class="icon-button" id="closeEntryDialogBtn" type="button" aria-label="Close">x</button>
+        </div>
+        <div class="field-grid">
+          <input id="entryId" type="hidden" />
+          <label><span>Title</span><input id="entryTitle" type="text" required /></label>
+          <label><span>Reference Number</span><input id="entryRefNumber" type="text" required /></label>
+          <label><span>Department</span><input id="entryDepartment" type="text" required /></label>
+          <label>
+            <span>Type</span>
+            <select id="entryType">
+              <option value="Government Tender">Government Tender</option>
+              <option value="Quotation">Quotation</option>
+            </select>
+          </label>
+          <label>
+            <span>Status</span>
+            <select id="entryStatus">
+              <option value="Applied">Applied</option>
+              <option value="Pending">Pending</option>
+              <option value="Won">Won</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </label>
+          <label><span>Date Applied</span><input id="entryDateApplied" type="date" /></label>
+          <label><span>Deadline</span><input id="entryDeadline" type="date" /></label>
+          <label><span>Amount</span><input id="entryAmount" type="number" min="0" step="0.01" /></label>
+          <label><span>Currency</span><input id="entryCurrency" type="text" value="INR" /></label>
+          <label class="field-span"><span>Contact Person</span><textarea id="entryContactPerson" rows="2"></textarea></label>
+          <label class="field-span"><span>Notes</span><textarea id="entryNotes" rows="3"></textarea></label>
+          <label>
+            <span>Follow-up Cadence</span>
+            <select id="entryCadence">
+              <option value="none">None</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Biweekly</option>
+            </select>
+          </label>
+          <label><span>Last Follow-up</span><input id="entryLastFollowUp" type="date" /></label>
+        </div>
+        <div class="dialog-actions">
+          <button class="button button-ghost" id="cancelEntryBtn" type="button">Cancel</button>
+          <button class="button button-primary" type="submit">Save Entry</button>
+        </div>
+      </form>
+    </dialog>
+
+    <template id="lineItemTemplate">
+      <div class="line-item-card">
+        <label class="line-item-description">
+          <span>Description</span>
+          <input class="line-item-description-input" type="text" />
+        </label>
+        <label>
+          <span>Qty</span>
+          <input class="line-item-qty" type="number" min="0" step="0.01" />
+        </label>
+        <label>
+          <span>Rate</span>
+          <input class="line-item-rate" type="number" min="0" step="0.01" />
+        </label>
+        <label>
+          <span>Amount</span>
+          <input class="line-item-amount" type="number" min="0" step="0.01" />
+        </label>
+        <button class="icon-button line-item-remove" type="button" aria-label="Remove line item">x</button>
+      </div>
+    </template>
+
+    <script src="/js/app.js" type="module"></script>
+  </body>
+</html>
