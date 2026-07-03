@@ -16,6 +16,7 @@ Requirements:
 
 - Python 3.11+
 - MongoDB running locally or reachable via `MONGODB_URI`
+- A Python runtime built with modern TLS/OpenSSL support for Atlas connections
 
 Create the local environment file:
 
@@ -97,3 +98,19 @@ app/
 - The app is MongoDB-backed now. Set `MONGODB_URI` if you are not using `mongodb://localhost:27017`.
 - Store local secrets in `.env`. The repo includes `.env.example` as the template.
 - The plan in `tender_quotation_registry_plan.md` describes the intended end state.
+
+## Deploying to Vercel
+
+This repository is configured for Vercel deployment with a Python serverless entrypoint.
+
+1. Ensure your project has `MONGODB_URI` and `MONGODB_DB` configured in Vercel Environment Variables.
+2. Use the Vercel dashboard or CLI to deploy the repo.
+3. `api/index.py` exports the FastAPI `app` from `app.main`.
+4. `vercel.json` rewrites all incoming traffic to the Python function.
+5. `runtime.txt` pins Python 3.11 for deployment compatibility.
+
+If you want to deploy locally for testing, run:
+
+```bash
+python -m uvicorn app.main:app --reload
+```

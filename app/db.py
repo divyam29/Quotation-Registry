@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import os
+import ssl
 from datetime import datetime, timezone
 from typing import Any, Optional
 
+import certifi
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from dotenv import load_dotenv
 
@@ -26,7 +28,12 @@ async def connect_to_mongo() -> None:
     global _client, _db
     if _client is not None:
         return
-    _client = AsyncIOMotorClient(MONGO_URI)
+    _client = AsyncIOMotorClient(
+        MONGO_URI,
+        tls=True,
+        tlsCAFile=certifi.where(),
+        tlsAllowInvalidCertificates=False,
+    )
     _db = _client[MONGO_DB]
 
 

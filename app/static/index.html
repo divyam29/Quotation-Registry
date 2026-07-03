@@ -14,14 +14,15 @@
   <body>
     <div class="page-shell">
       <header class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Registry PWA</p>
-          <h1>Tender & Quotation Registry</h1>
-          <p class="hero-text">
-            Track tenders, monitor follow-up pressure, and generate branded quotations from the same offline-capable workspace.
-          </p>
+        <div class="hero-brand">
+          <div class="brand-mark">GT</div>
+          <div class="hero-copy">
+            <h1>Laksmi Carbide</h1>
+            <p class="hero-subtitle">Tender &amp; Quotation Registry</p>
+          </div>
         </div>
-        <div class="hero-actions">
+        <div class="hero-actions hero-meta">
+          <p class="hero-date" id="heroDate">2 July 2026</p>
           <button class="button button-ghost" id="syncBanner" type="button" hidden>Offline mode active</button>
           <button class="button button-accent" id="installBtn" type="button" hidden>Install App</button>
         </div>
@@ -95,13 +96,13 @@
             <table class="registry-table">
               <thead>
                 <tr>
-                  <th>Title</th>
-                  <th>Ref</th>
+                  <th>Title / Reference</th>
                   <th>Department</th>
                   <th>Type</th>
-                  <th>Status</th>
+                  <th>Applied On</th>
                   <th>Deadline</th>
                   <th>Amount</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -119,15 +120,15 @@
         <div class="quotation-grid">
           <form class="surface quotation-form" id="quotationForm">
             <div class="form-header">
-              <h2>Quotation Builder</h2>
+              <h2>Your letterhead</h2>
               <div class="form-header-actions">
-                <button class="button button-ghost" id="resetQuotationBtn" type="button">Reset</button>
                 <button class="button button-primary" id="saveToRegistryBtn" type="button">Save To Registry</button>
+                <button class="button button-ghost" id="resetQuotationBtn" type="button">Reset Form</button>
               </div>
             </div>
 
             <details class="form-section" open>
-              <summary>Letterhead</summary>
+              <summary>Your letterhead</summary>
               <div class="field-grid">
                 <label><span>Company Name</span><input name="letterhead.company_name" type="text" /></label>
                 <label><span>Tagline</span><input name="letterhead.tagline" type="text" /></label>
@@ -152,7 +153,7 @@
             </details>
 
             <details class="form-section" open>
-              <summary>Quotation Meta</summary>
+              <summary>Quotation details</summary>
               <div class="field-grid">
                 <label><span>Reference Number</span><input name="meta.ref_number" type="text" /></label>
                 <label><span>Date</span><input name="meta.date" type="date" /></label>
@@ -183,7 +184,7 @@
             </details>
 
             <details class="form-section" open>
-              <summary>Signature Block</summary>
+              <summary>Signature</summary>
               <div class="field-grid">
                 <label><span>Name</span><input name="signature.name" type="text" /></label>
                 <label><span>Designation</span><input name="signature.designation" type="text" /></label>
@@ -194,7 +195,7 @@
 
           <section class="surface preview-surface">
             <div class="preview-toolbar">
-              <h2>Live Preview</h2>
+              <h2>Preview</h2>
               <button class="button button-accent" id="printQuotationBtn" type="button">Print / Save PDF</button>
             </div>
             <article class="quotation-preview" id="quotationPreview">
@@ -234,6 +235,7 @@
               <table class="preview-table">
                 <thead>
                   <tr>
+                    <th>#</th>
                     <th>Description</th>
                     <th>Qty</th>
                     <th>Rate</th>
