@@ -504,6 +504,12 @@ textarea {
   padding: 0.4rem;
 }
 
+.upload-helper {
+  margin: 0.4rem 0 0;
+  font-size: 0.83rem;
+  color: var(--muted);
+}
+
 .line-items {
   display: grid;
   gap: 0.7rem;

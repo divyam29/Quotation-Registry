@@ -130,7 +130,7 @@
             <details class="form-section" open>
               <summary>Your letterhead</summary>
               <div class="field-grid">
-                <label><span>Company Name</span><input name="letterhead.company_name" type="text" /></label>
+                <label><span>Company name</span><input name="letterhead.company_name" type="text" /></label>
                 <label><span>Tagline</span><input name="letterhead.tagline" type="text" /></label>
                 <label class="field-span"><span>Address</span><textarea name="letterhead.address" rows="2"></textarea></label>
                 <label><span>GSTIN</span><input name="letterhead.gstin" type="text" /></label>
@@ -138,14 +138,16 @@
               </div>
               <div class="upload-grid">
                 <div class="upload-card">
-                  <span>Logo</span>
+                  <span>Logo image <small>(optional)</small></span>
                   <input id="logoUpload" type="file" accept="image/*" />
+                  <p class="upload-helper">Upload logo</p>
                   <img id="logoPreview" alt="Logo preview" hidden />
                   <button class="button button-ghost" id="removeLogoBtn" type="button">Remove Logo</button>
                 </div>
                 <div class="upload-card">
-                  <span>Signature</span>
+                  <span>Signature image <small>(optional)</small></span>
                   <input id="signatureUpload" type="file" accept="image/*" />
+                  <p class="upload-helper">Upload signature</p>
                   <img id="signaturePreview" alt="Signature preview" hidden />
                   <button class="button button-ghost" id="removeSignatureBtn" type="button">Remove Signature</button>
                 </div>
@@ -155,31 +157,31 @@
             <details class="form-section" open>
               <summary>Quotation details</summary>
               <div class="field-grid">
-                <label><span>Reference Number</span><input name="meta.ref_number" type="text" /></label>
+                <label><span>Reference no.</span><input name="meta.ref_number" type="text" /></label>
                 <label><span>Date</span><input name="meta.date" type="date" /></label>
                 <label><span>Currency</span><input name="meta.currency" type="text" value="INR" /></label>
-                <label><span>Party Name</span><input name="meta.party_name" type="text" /></label>
-                <label class="field-span"><span>Party Address</span><textarea name="meta.party_address" rows="2"></textarea></label>
-                <label><span>Attention</span><input name="meta.attention" type="text" /></label>
-                <label class="field-span"><span>Subject</span><input name="meta.subject" type="text" value="Quotation" /></label>
-                <label class="field-span"><span>Intro</span><textarea name="meta.intro" rows="3"></textarea></label>
+                <label><span>Party / company name</span><input name="meta.party_name" type="text" /></label>
+                <label class="field-span"><span>Address</span><textarea name="meta.party_address" rows="2"></textarea></label>
+                <label><span>Attn (contact person)</span><input name="meta.attention" type="text" /></label>
+                <label class="field-span"><span>Subject line</span><input name="meta.subject" type="text" value="Quotation" /></label>
+                <label class="field-span"><span>Intro paragraph</span><textarea name="meta.intro" rows="3"></textarea></label>
               </div>
             </details>
 
             <details class="form-section" open>
-              <summary>Line Items</summary>
+              <summary>Line items</summary>
               <div id="lineItems" class="line-items"></div>
-              <button class="button button-secondary" id="addLineItemBtn" type="button">Add Line Item</button>
+              <button class="button button-secondary" id="addLineItemBtn" type="button">+ Add item</button>
             </details>
 
             <details class="form-section" open>
               <summary>Terms</summary>
               <div class="field-grid">
-                <label><span>Payment Terms</span><input name="terms.payment_terms" type="text" /></label>
-                <label><span>Delivery</span><input name="terms.delivery" type="text" /></label>
+                <label><span>Payment terms</span><input name="terms.payment_terms" type="text" /></label>
+                <label><span>Validity (days)</span><input name="terms.validity_days" type="number" min="0" value="30" /></label>
+                <label><span>Delivery timeline</span><input name="terms.delivery" type="text" /></label>
                 <label><span>Warranty</span><input name="terms.warranty" type="text" /></label>
-                <label><span>Validity Days</span><input name="terms.validity_days" type="number" min="0" value="30" /></label>
-                <label class="field-span"><span>Tax Note</span><textarea name="terms.tax_note" rows="2"></textarea></label>
+                <label class="field-span"><span>Extra charges note</span><textarea name="terms.tax_note" rows="2"></textarea></label>
               </div>
             </details>
 
