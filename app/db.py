@@ -28,7 +28,7 @@ def now_utc() -> datetime:
     return datetime.now(timezone.utc)
 
 
-async def connect_to_mongo() -> None:
+def connect_to_mongo() -> None:
     global _client, _db
     if _client is not None:
         return
@@ -44,7 +44,7 @@ async def connect_to_mongo() -> None:
     _db = _client[MONGO_DB]
 
 
-async def close_mongo() -> None:
+def close_mongo() -> None:
     global _client, _db
     if _client is not None:
         _client.close()
@@ -54,7 +54,7 @@ async def close_mongo() -> None:
 
 def get_db() -> AsyncIOMotorDatabase:
     if _db is None:
-        raise RuntimeError("MongoDB not connected")
+        connect_to_mongo()
     return _db
 
 

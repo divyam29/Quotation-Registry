@@ -304,16 +304,22 @@ function renderPreview() {
   if (state.assets.logo?.data_url) {
     logo.src = state.assets.logo.data_url;
     logo.hidden = false;
+    logo.style.display = "";
   } else {
     logo.hidden = true;
+    logo.style.display = "none";
+    logo.removeAttribute("src");
   }
 
   const signatureImage = document.getElementById("previewSignature");
   if (state.assets.signature?.data_url) {
     signatureImage.src = state.assets.signature.data_url;
     signatureImage.hidden = false;
+    signatureImage.style.display = "";
   } else {
     signatureImage.hidden = true;
+    signatureImage.style.display = "none";
+    signatureImage.removeAttribute("src");
   }
 
   document.getElementById("previewItems").innerHTML = state.draft.line_items.map((item, index) => `

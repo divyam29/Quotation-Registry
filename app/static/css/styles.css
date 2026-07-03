@@ -590,6 +590,10 @@ textarea {
   margin: 0;
 }
 
+.quotation-preview img[hidden] {
+  display: none !important;
+}
+
 .letterhead-brand h3 {
   margin: 0;
   font-family: Georgia, serif;
