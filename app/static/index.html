@@ -203,16 +203,16 @@
             <article class="quotation-preview" id="quotationPreview">
               <header class="letterhead">
                 <div class="letterhead-meta">
-                  <span id="previewGstin">GSTIN</span>
-                  <span id="previewMobile">Mobile</span>
+                  <span id="previewGstin">GSTIN: -</span>
+                  <span id="previewMobile">Mob.: -</span>
                 </div>
                 <div class="letterhead-brand">
-                  <img id="previewLogo" alt="Company logo" hidden />
-                  <div>
+                  <div class="letterhead-brand-copy">
                     <h3 id="previewCompanyName">Your Company Name</h3>
-                    <p id="previewTagline">(Your Tagline)</p>
-                    <p id="previewAddress">Address line appears here.</p>
+                    <p id="previewTagline" class="preview-tagline"></p>
+                    <p id="previewAddress" class="preview-address">Address line appears here.</p>
                   </div>
+                  <img id="previewLogo" alt="Company logo" hidden />
                 </div>
                 <div class="letterhead-rule"></div>
               </header>
@@ -224,14 +224,14 @@
 
               <section class="preview-party">
                 <p>To,</p>
-                <p id="previewPartyName">Recipient Name</p>
-                <p id="previewPartyAddress">Recipient address</p>
+                <p id="previewPartyName">Party name</p>
+                <p id="previewPartyAddress">-</p>
                 <p id="previewAttention">Attention: -</p>
               </section>
 
               <section class="preview-subject">
-                <strong id="previewSubject">Quotation</strong>
-                <p id="previewIntro">Your introduction appears here.</p>
+                <strong>Subject: <span id="previewSubject">Quotation</span></strong>
+                <p id="previewIntro">We thank you for the opportunity to quote for the above requirement. Please find our detailed offer below for your kind consideration.</p>
               </section>
 
               <table class="preview-table">
@@ -247,22 +247,23 @@
                 <tbody id="previewItems"></tbody>
                 <tfoot>
                   <tr>
-                    <td colspan="3">Total</td>
+                    <td colspan="4">Total</td>
                     <td id="previewTotal">INR 0.00</td>
                   </tr>
                 </tfoot>
               </table>
 
               <section class="preview-terms">
-                <p><strong>Payment Terms:</strong> <span id="previewPaymentTerms">-</span></p>
-                <p><strong>Delivery:</strong> <span id="previewDelivery">-</span></p>
-                <p><strong>Warranty:</strong> <span id="previewWarranty">-</span></p>
-                <p><strong>Validity:</strong> <span id="previewValidity">30 days</span></p>
-                <p><strong>Tax Note:</strong> <span id="previewTaxNote">-</span></p>
+                <p><strong>Commercial terms</strong></p>
+                <p>Payment terms: <span id="previewPaymentTerms">-</span></p>
+                <p>Delivery: <span id="previewDelivery">-</span></p>
+                <p>Warranty: <span id="previewWarranty">-</span></p>
+                <p>Validity: <span id="previewValidity">30 days</span></p>
+                <p><span id="previewTaxNote">-</span></p>
               </section>
 
               <section class="preview-signature">
-                <p>For <span id="previewSignatureCompany">Your Company Name</span></p>
+                <p>Warm regards,</p>
                 <img id="previewSignature" alt="Signature preview" hidden />
                 <p class="signature-name" id="previewSignatureName">Authorized Signatory</p>
                 <p id="previewSignatureDesignation">Designation</p>

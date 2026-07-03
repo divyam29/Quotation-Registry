@@ -281,7 +281,7 @@ function renderPreview() {
   document.getElementById("previewGstin").textContent = `GSTIN: ${textOrDash(letterhead.gstin)}`;
   document.getElementById("previewMobile").textContent = `Mobile: ${textOrDash(letterhead.mobile)}`;
   document.getElementById("previewCompanyName").textContent = textOrDash(letterhead.company_name);
-  document.getElementById("previewTagline").textContent = letterhead.tagline ? `(${letterhead.tagline})` : "()";
+  document.getElementById("previewTagline").textContent = letterhead.tagline ? letterhead.tagline : "";
   document.getElementById("previewAddress").textContent = textOrDash(letterhead.address);
   document.getElementById("previewRef").textContent = `Ref: ${textOrDash(meta.ref_number)}`;
   document.getElementById("previewDate").textContent = `Date: ${textOrDash(meta.date)}`;
@@ -295,7 +295,6 @@ function renderPreview() {
   document.getElementById("previewWarranty").textContent = textOrDash(terms.warranty);
   document.getElementById("previewValidity").textContent = `${terms.validity_days || 0} days`;
   document.getElementById("previewTaxNote").textContent = textOrDash(terms.tax_note);
-  document.getElementById("previewSignatureCompany").textContent = textOrDash(letterhead.company_name);
   document.getElementById("previewSignatureName").textContent = textOrDash(signature.name);
   document.getElementById("previewSignatureDesignation").textContent = textOrDash(signature.designation);
   document.getElementById("previewSignaturePhone").textContent = textOrDash(signature.phone);
@@ -317,8 +316,9 @@ function renderPreview() {
     signatureImage.hidden = true;
   }
 
-  document.getElementById("previewItems").innerHTML = state.draft.line_items.map((item) => `
+  document.getElementById("previewItems").innerHTML = state.draft.line_items.map((item, index) => `
     <tr>
+      <td>${index + 1}</td>
       <td>${textOrDash(item.description)}</td>
       <td>${textOrDash(item.qty)}</td>
       <td>${formatCurrency(item.rate, meta.currency || "INR")}</td>

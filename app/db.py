@@ -5,7 +5,11 @@ import ssl
 from datetime import datetime, timezone
 from typing import Any, Optional
 
-import certifi
+try:
+    import certifi
+except ImportError:  # pragma: no cover
+    certifi = None
+
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from dotenv import load_dotenv
 
@@ -28,12 +32,15 @@ async def connect_to_mongo() -> None:
     global _client, _db
     if _client is not None:
         return
-    _client = AsyncIOMotorClient(
-        MONGO_URI,
-        tls=True,
-        tlsCAFile=certifi.where(),
-        tlsAllowInvalidCertificates=False,
-    )
+
+    client_kwargs = {
+        "tls": True,
+        "tlsAllowInvalidCertificates": False,
+    }
+    if certifi is not None:
+        client_kwargs["tlsCAFile"] = certifi.where()
+
+    _client = AsyncIOMotorClient(MONGO_URI, **client_kwargs)
     _db = _client[MONGO_DB]
 
 

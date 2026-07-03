@@ -571,16 +571,23 @@ textarea {
 }
 
 .letterhead-brand {
-  display: block;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-top: 0.25rem;
 }
 
+.letterhead-brand-copy {
+  flex: 1;
+  text-align: center;
+}
+
 .letterhead-brand img {
-  width: 68px;
-  height: 68px;
+  width: 88px;
+  height: 88px;
   object-fit: contain;
-  margin: 0 auto 0.4rem;
+  margin: 0;
 }
 
 .letterhead-brand h3 {
