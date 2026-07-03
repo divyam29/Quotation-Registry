@@ -116,7 +116,7 @@ img {
 .tab-switcher {
   display: inline-flex;
   gap: 0.65rem;
-  margin: -2px 0 0 12.5rem;
+  margin: 1.5rem 0 0;
   padding: 0;
 }
 
@@ -401,23 +401,24 @@ textarea {
 
 .entry-actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
 }
 
 .entry-action {
-  width: 2.45rem;
-  height: 2.45rem;
+  min-width: 5rem;
   border: 1px solid var(--line);
   border-radius: 0.35rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 0.65rem 0.9rem;
   background: #fffaf2;
   color: #756b5a;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.92rem;
+  line-height: 1;
 }
 
 .entry-action.danger {
