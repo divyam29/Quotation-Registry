@@ -13,6 +13,8 @@ from ..repositories import (
     entry_stats,
     list_entries as repo_list_entries,
     update_entry as repo_update_entry,
+    send_due_reminders,
+    send_reminder_for_entry,
 )
 
 router = APIRouter(tags=["entries"])
@@ -48,6 +50,27 @@ async def delete_entry(entry_id: str):
 @router.get("/entries/stats", response_model=StatsOut)
 async def stats():
     return await entry_stats()
+
+
+@router.post("/reminders/send")
+async def trigger_reminders():
+    sent_count = await send_due_reminders()
+    return {"sent": sent_count}
+
+
+@router.post("/entries/{entry_id}/send-reminder")
+async def send_reminder_entry(entry_id: str):
+    try:
+        result = await send_reminder_for_entry(entry_id)
+        return {"sent": True, "reminder": result}
+    except KeyError:
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=404, detail="Entry not found")
+    except Exception as exc:
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
 @router.post("/entries/{entry_id}/followup-ics")

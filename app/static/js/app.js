@@ -129,6 +129,9 @@ const Api = {
   followupIcs(id) {
     return this.request(`/api/entries/${id}/followup-ics`, { method: "POST" });
   },
+  sendEntryReminder(id) {
+    return this.request(`/api/entries/${id}/send-reminder`, { method: "POST" });
+  },
 };
 
 function showToast(message) {
@@ -229,6 +232,7 @@ function renderEntries() {
           <div class="entry-actions">
             <button class="entry-action" type="button" data-action="edit" data-id="${entry._id}">Edit</button>
             <button class="entry-action" type="button" data-action="ics" data-id="${entry._id}">ICS</button>
+            <button class="entry-action" type="button" data-action="remind" data-id="${entry._id}">Remind Now</button>
             ${mailLink}
             <button class="entry-action danger" type="button" data-action="delete" data-id="${entry._id}">Delete</button>
           </div>
@@ -491,6 +495,17 @@ function wireRegistry() {
     if (target.dataset.action === "ics") {
       const ics = await Api.followupIcs(entry._id);
       downloadIcs(ics, `${(entry.ref_number || "followup").replaceAll("/", "-")}.ics`);
+      return;
+    }
+    if (target.dataset.action === "remind") {
+      try {
+        await Api.sendEntryReminder(entry._id);
+        showToast("Reminder sent.");
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to send reminder.");
+      }
+      return;
     }
   });
 }

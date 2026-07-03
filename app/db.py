@@ -64,6 +64,8 @@ def entries_collection():
 
 def quotations_collection():
     return get_db()["quotations"]
+def reminders_collection():
+    return get_db()["reminders"]
 
 
 def assets_collection():
@@ -78,6 +80,8 @@ async def ensure_indexes() -> None:
     await entries_collection().create_index([("title", "text"), ("ref_number", "text"), ("department", "text")])
     await entries_collection().create_index("deadline")
     await entries_collection().create_index("status")
+    await reminders_collection().create_index("due_date")
+    await reminders_collection().create_index([("sent_at", 1), ("due_date", 1)])
     await assets_collection().create_index("kind")
 
 

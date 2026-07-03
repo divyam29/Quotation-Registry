@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import asyncio
 import re
 from datetime import date, datetime, timedelta
 from typing import Any, Optional, Union
@@ -8,7 +9,20 @@ from typing import Any, Optional, Union
 from bson import ObjectId
 from pymongo import ReturnDocument
 
-from .db import assets_collection, entries_collection, now_utc, quotations_collection, settings_collection
+from .db import (
+    assets_collection,
+    entries_collection,
+    now_utc,
+    quotations_collection,
+    reminders_collection,
+    settings_collection,
+)
+from .notifications import (
+    build_quote_reminder_body,
+    build_quote_reminder_subject,
+    get_admin_emails,
+    send_email,
+)
 from .models import QuotationDraft, RegistryEntryBase
 
 
@@ -156,7 +170,114 @@ async def save_entry_from_draft(draft: dict[str, Any]) -> dict[str, Any]:
         follow_up_cadence="none",
         last_follow_up=None,
     )
-    return await create_entry(entry)
+    result = await create_entry(entry)
+    await schedule_quote_reminder(result)
+    return result
+
+
+async def schedule_quote_reminder(entry: dict[str, Any]) -> dict[str, Any]:
+    if not entry:
+        raise ValueError("Entry data is required to schedule a reminder")
+
+    applied_date = date.fromisoformat(entry["date_applied"]) if entry.get("date_applied") else date.today()
+    reminder_due_date = applied_date + timedelta(days=7)
+    reminder_payload = {
+        "_id": ObjectId(),
+        "entry_id": _ensure_object_id(entry["_id"] if isinstance(entry["_id"], str) else entry["_id"]),
+        "title": entry.get("title", "Quotation"),
+        "ref_number": entry.get("ref_number", ""),
+        "department": entry.get("department", ""),
+        "contact_person": entry.get("contact_person", ""),
+        "date_applied": applied_date.isoformat(),
+        "deadline": entry.get("deadline"),
+        "amount": entry.get("amount"),
+        "currency": entry.get("currency", "INR"),
+        "created_at": now_utc(),
+        "due_date": reminder_due_date.isoformat(),
+        "sent_at": None,
+    }
+    await reminders_collection().insert_one(reminder_payload)
+    return {
+        **reminder_payload,
+        "_id": str(reminder_payload["_id"]),
+        "entry_id": str(reminder_payload["entry_id"]),
+        "date_applied": reminder_payload["date_applied"].isoformat(),
+        "due_date": reminder_payload["due_date"].isoformat(),
+    }
+
+
+async def get_due_reminders() -> list[dict[str, Any]]:
+    today_iso = date.today().isoformat()
+    cursor = reminders_collection().find({"sent_at": None, "due_date": {"$lte": today_iso}})
+    reminders = []
+    async for reminder in cursor:
+        reminder["_id"] = str(reminder["_id"])
+        reminder["entry_id"] = str(reminder["entry_id"])
+        # date_applied and due_date are stored as ISO date strings
+        reminders.append(reminder)
+    return reminders
+
+
+async def mark_reminder_sent(reminder_id: str) -> bool:
+    result = await reminders_collection().update_one(
+        {"_id": _ensure_object_id(reminder_id)},
+        {"$set": {"sent_at": now_utc()}},
+    )
+    return result.modified_count > 0
+
+
+async def send_due_reminders() -> int:
+    recipients = get_admin_emails()
+    if not recipients:
+        return 0
+
+    reminders = await get_due_reminders()
+    sent_count = 0
+    for reminder in reminders:
+        subject = build_quote_reminder_subject(reminder)
+        body = build_quote_reminder_body(reminder)
+        try:
+            await asyncio.to_thread(send_email, subject, body, recipients)
+            await mark_reminder_sent(reminder["_id"])
+            sent_count += 1
+        except Exception:
+            continue
+    return sent_count
+
+
+async def send_reminder_for_entry(entry_id: str) -> dict[str, Any]:
+    entry = await entries_collection().find_one({"_id": _ensure_object_id(entry_id)})
+    if not entry:
+        raise KeyError("Entry not found")
+
+    recipients = get_admin_emails()
+    if not recipients:
+        raise RuntimeError("No admin recipients configured")
+
+    subject = build_quote_reminder_subject(entry)
+    body = build_quote_reminder_body(entry)
+    await asyncio.to_thread(send_email, subject, body, recipients)
+
+    # record the reminder as sent
+    reminder_payload = {
+        "_id": ObjectId(),
+        "entry_id": _ensure_object_id(entry_id),
+        "title": entry.get("title", "Quotation"),
+        "ref_number": entry.get("ref_number", ""),
+        "department": entry.get("department", ""),
+        "contact_person": entry.get("contact_person", ""),
+        "date_applied": entry.get("date_applied") or date.today().isoformat(),
+        "deadline": entry.get("deadline"),
+        "amount": entry.get("amount"),
+        "currency": entry.get("currency", "INR"),
+        "created_at": now_utc(),
+        "due_date": date.today().isoformat(),
+        "sent_at": now_utc(),
+    }
+    await reminders_collection().insert_one(reminder_payload)
+    reminder_payload["_id"] = str(reminder_payload["_id"])
+    reminder_payload["entry_id"] = str(reminder_payload["entry_id"])
+    return reminder_payload
 
 
 async def upload_asset(kind: str, content_type: str, raw: bytes) -> dict[str, Any]:
