@@ -217,24 +217,27 @@ function renderEntries() {
   }
   el.entriesTableBody.innerHTML = state.entries.map((entry) => {
     const email = (entry.contact_person || "").match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0];
-    const mailLink = email ? `<a class="entry-action" href="mailto:${email}?subject=${encodeURIComponent(entry.ref_number || entry.title)}">Email</a>` : "";
     const urgent = isUrgent(entry) ? `<span class="stamp stamp-urgent">Urgent</span>` : "";
+    const refDisplay = entry.ref_number ? `<small style="display: block; color: #666;">${entry.ref_number}</small>` : "";
     return `
       <tr>
-        <td><strong>${textOrDash(entry.title)}</strong><br><small>${textOrDash(entry.notes)}</small></td>
-        <td>${textOrDash(entry.ref_number)}</td>
+        <td><strong>${textOrDash(entry.title)}</strong><br><small>${textOrDash(entry.notes)}</small>${refDisplay}</td>
         <td>${textOrDash(entry.department)}</td>
         <td>${textOrDash(entry.type)}</td>
-        <td><span class="${entryStamp(entry.status)}">${entry.status}</span> ${urgent}</td>
+        <td>${textOrDash(entry.date_applied)}</td>
         <td>${textOrDash(entry.deadline)}</td>
         <td>${formatCurrency(entry.amount, entry.currency || "INR")}</td>
+        <td><span class="${entryStamp(entry.status)}">${entry.status}</span> ${urgent}</td>
         <td>
-          <div class="entry-actions">
-            <button class="entry-action" type="button" data-action="edit" data-id="${entry._id}">Edit</button>
-            <button class="entry-action" type="button" data-action="ics" data-id="${entry._id}">ICS</button>
-            <button class="entry-action" type="button" data-action="remind" data-id="${entry._id}">Remind Now</button>
-            ${mailLink}
-            <button class="entry-action danger" type="button" data-action="delete" data-id="${entry._id}">Delete</button>
+          <div class="entry-actions-dropdown">
+            <button class="entry-actions-toggle" type="button" data-id="${entry._id}">⋮</button>
+            <div class="entry-actions-menu" hidden>
+              <button class="entry-action" type="button" data-action="edit" data-id="${entry._id}">Edit</button>
+              <button class="entry-action" type="button" data-action="ics" data-id="${entry._id}">Download ICS</button>
+              <button class="entry-action" type="button" data-action="remind" data-id="${entry._id}">Send Reminder</button>
+              ${email ? `<a class="entry-action" href="mailto:${email}?subject=${encodeURIComponent(entry.ref_number || entry.title)}">Email</a>` : ""}
+              <button class="entry-action danger" type="button" data-action="delete" data-id="${entry._id}">Delete</button>
+            </div>
           </div>
         </td>
       </tr>
@@ -477,10 +480,23 @@ function wireRegistry() {
   });
 
   el.entriesTableBody.addEventListener("click", async (event) => {
+    const toggleBtn = event.target.closest(".entry-actions-toggle");
+    if (toggleBtn) {
+      const entryId = toggleBtn.dataset.id;
+      const menu = toggleBtn.closest(".entry-actions-dropdown").querySelector(".entry-actions-menu");
+      const allMenus = el.entriesTableBody.querySelectorAll(".entry-actions-menu");
+      allMenus.forEach((m) => {
+        if (m !== menu) m.hidden = true;
+      });
+      menu.hidden = !menu.hidden;
+      return;
+    }
     const target = event.target.closest("[data-action]");
     if (!target) return;
     const entry = state.entries.find((item) => item._id === target.dataset.id);
     if (!entry) return;
+    const menu = target.closest(".entry-actions-dropdown")?.querySelector(".entry-actions-menu");
+    if (menu) menu.hidden = true;
     if (target.dataset.action === "edit") {
       openEntryDialog(entry);
       return;
@@ -604,6 +620,13 @@ async function init() {
   wireRegistry();
   wireQuotationForm();
   wirePwaInstall();
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".entry-actions-dropdown")) {
+      document.querySelectorAll(".entry-actions-menu").forEach((menu) => {
+        menu.hidden = true;
+      });
+    }
+  });
   await Promise.all([loadEntries(), loadStats(), bootstrapDraft()]);
 }
 

@@ -425,6 +425,75 @@ textarea {
   color: var(--red);
 }
 
+.entry-actions-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.entry-actions-toggle {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.entry-actions-toggle:hover {
+  opacity: 1;
+}
+
+.entry-actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  min-width: 160px;
+  margin-top: 0.5rem;
+}
+
+.entry-actions-menu[hidden] {
+  display: none;
+}
+
+.entry-actions-menu .entry-action,
+.entry-actions-menu a.entry-action {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 0;
+  min-width: auto;
+}
+
+.entry-actions-menu .entry-action:hover,
+.entry-actions-menu a.entry-action:hover {
+  background-color: var(--paper-dark);
+}
+
+.entry-actions-menu .entry-action.danger:hover,
+.entry-actions-menu a.entry-action.danger:hover {
+  background-color: #fee;
+}
+
+.entry-actions-menu .entry-action.danger,
+.entry-actions-menu a.entry-action.danger {
+  color: var(--red);
+}
+
+
 .quotation-grid {
   display: grid;
   grid-template-columns: minmax(310px, 0.9fr) minmax(500px, 1.1fr);

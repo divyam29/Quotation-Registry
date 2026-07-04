@@ -43,6 +43,19 @@ def _serialize_doc(doc: dict[str, Any]) -> dict[str, Any]:
     return doc
 
 
+def _coerce_date(value: Any) -> Optional[date]:
+    if value is None:
+        return None
+    if isinstance(value, date) and not isinstance(value, datetime):
+        return value
+    if isinstance(value, str):
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            return None
+    return None
+
+
 def _search_filter(q: Optional[str], entry_type: Optional[str], status: Optional[str]) -> dict[str, Any]:
     filters: dict[str, Any] = {}
     clauses: list[dict[str, Any]] = []
@@ -179,7 +192,7 @@ async def schedule_quote_reminder(entry: dict[str, Any]) -> dict[str, Any]:
     if not entry:
         raise ValueError("Entry data is required to schedule a reminder")
 
-    applied_date = date.fromisoformat(entry["date_applied"]) if entry.get("date_applied") else date.today()
+    applied_date = _coerce_date(entry.get("date_applied")) or date.today()
     reminder_due_date = applied_date + timedelta(days=7)
     reminder_payload = {
         "_id": ObjectId(),
@@ -201,8 +214,8 @@ async def schedule_quote_reminder(entry: dict[str, Any]) -> dict[str, Any]:
         **reminder_payload,
         "_id": str(reminder_payload["_id"]),
         "entry_id": str(reminder_payload["entry_id"]),
-        "date_applied": reminder_payload["date_applied"].isoformat(),
-        "due_date": reminder_payload["due_date"].isoformat(),
+        "date_applied": reminder_payload["date_applied"],
+        "due_date": reminder_payload["due_date"],
     }
 
 
